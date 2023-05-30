@@ -21,6 +21,7 @@ import {
   getDocs,
   onSnapshot,
 } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -38,6 +39,77 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseapp = initializeApp(firebaseConfig);
 export const auth = getAuth();
+const storage = getStorage(firebaseapp);
+export const db = getFirestore();
+
+export const uploadFile = async (user, file, type) => {
+  if (type === "profile") {
+    const storageRef = ref(storage, `users/${user.uid}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  } else if (type === "post") {
+    const storageRef = ref(storage, `posts/${user.uid}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  }
+}
+
+export const deleteFile = async (user, file, type) => {
+  if (type === "profile") {
+    const storageRef = ref(storage, `users/${user.uid}/${file.name}`);
+    await deleteObject(storageRef);
+  } else if (type === "post") {
+    const storageRef = ref(storage, `posts/${user.uid}/${file.name}`);
+    await deleteObject(storageRef);
+  }
+}
+
+
+export const downloadFile = async (user, file, type) => {
+  if (type === "profile") {
+    const storageRef = ref(storage, `users/${user.uid}/${file.name}`);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  } else if (type === "post") {
+    const storageRef = ref(storage, `posts/${user.uid}/${file.name}`);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  }
+}
+
+
+// export const createUser = async (email, password) => {
+//   const userCredential = await createUserWithEmailAndPassword(
+//     auth,
+//     email,
+//     password
+//   );
+//   const user = userCredential.user;
+//   const userRef = doc(db, "users", user.uid);
+//   await setDoc(userRef, {
+//     uid: user.uid,
+//     email: user.email,
+//     displayName: user.displayName,
+//     photoURL: user.photoURL,
+//     friends: [],
+//     posts: [],
+//   });
+//   return user;
+// };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
@@ -53,7 +125,6 @@ export const signInWithGithubPopup = () =>
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
-export const db = getFirestore();
 
 export const addCollectionAndDocuments = async (
   collectionKey,
@@ -83,13 +154,13 @@ export const getUsers = async () => {
 };
 
 export const getUser = async (userId) => {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-        return userSnap.data();
-    } else {
-        console.log("No such document!");
-    }
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return userSnap.data();
+  } else {
+    console.log("No such document!");
+  }
 };
 
 export const getPosts = async (user) => {
@@ -102,16 +173,12 @@ export const getPosts = async (user) => {
   }
 };
 
-export const setPosts = async (
-  posts,
-  user,
-  additionalInformation = {}
-) => {
+export const setPosts = async (posts, user, additionalInformation = {}) => {
   const postDocRef = doc(db, "posts", user.uid);
   try {
     console.log("adding posts to FireStore");
     await setDoc(postDocRef, {
-        posts,
+      posts,
       ...additionalInformation,
     });
   } catch (error) {
@@ -161,7 +228,7 @@ export const createUserDocumentFromAuth = async (
     ];
     try {
       await setDoc(postDocRef, {
-        posts
+        posts,
       });
     } catch (error) {
       console.log("error creating the user", error.message);

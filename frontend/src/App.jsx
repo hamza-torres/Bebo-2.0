@@ -14,7 +14,7 @@ import {
   getUser,
   onAuthStateChangedListener,
 } from "./utils/firebase";
-import { setLogin } from "./state";
+import { setUser } from "./state/states";
 
 function App() {
   const dispatch = useDispatch();
@@ -22,14 +22,18 @@ function App() {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) {
         createUserDocumentFromAuth(user);
+        getUser(user)
+        .then(response => response.json())
+        .then(data => {dispatch(setUser(data))})
       }
-      const setUser = async () => {
-        const user_doc = await getUser(user.uid);
-        dispatch(
-          setLogin(user_doc)
-        );
-      }
-      setUser();
+
+      // const setUser = async () => {
+      //   const user_doc = await getUser(user.uid);
+      //   dispatch(
+      //     setLogin(user_doc)
+      //   );
+      // }
+      // setUser();
     });
     return unsubscribe;
   }, []);
