@@ -8,10 +8,13 @@ import MyPostWidget from "../widgets/MyPostWidget";
 import FriendListWidget from "../widgets/FriendListWidget";
 import AdvertWidget from "../widgets/AdvertWidget";
 import Friend from "../../components/Friend";
+import { useSelector } from "react-redux";
+import { selectCurrentUser, selectImg } from "../../store/user/user.selector";
 
 const Home = () => {
   const isNonMobile = useMediaQuery("(min-width:1000px)");
-  const { _id, picturePath } = useSelector((state) => state.user);
+  const _id = useSelector(selectCurrentUser)
+  const picturePath = useSelector(selectImg)
   return (
     <Box>
       <Navbar />
@@ -25,7 +28,7 @@ const Home = () => {
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
           <UserWidget userId={_id} picturePath={picturePath} />
         </Box>
-        <Box
+        {/* <Box
           flexBasis={isNonMobile ? "42%" : undefined}
           mt={isNonMobile ? undefined : "2rem"}
         >
@@ -38,7 +41,7 @@ const Home = () => {
             <Box m="2rem 0" />
             <FriendListWidget userId={_id} />
           </Box>
-        )}
+        )} */}
       </Box>
     </Box>
   );

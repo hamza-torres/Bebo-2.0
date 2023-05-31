@@ -6,3 +6,6 @@ export const setCurrentUser = (user) =>
 
 export const setMode = () =>
   createAction(USER_ACTION_TYPES.SET_MODE);
+
+export const setImg = (img) =>
+  createAction(USER_ACTION_TYPES.SET_IMG, img);

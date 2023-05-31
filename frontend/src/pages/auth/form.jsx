@@ -13,13 +13,14 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 // import { setUser } from "../../state/states";
-import { setCurrentUser } from "../../store/user/user.action";
+import { setCurrentUser, setImg } from "../../store/user/user.action";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
+  uploadFile,
 } from "../../utils/firebase";
 
 const registerSchema = yup.object().shape({
@@ -52,8 +53,6 @@ const initialValuesLogin = {
   password: "",
 };
 
-
-
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const isLogin = pageType === "login";
@@ -61,20 +60,25 @@ const Form = () => {
   console.log("isLogin", isLogin);
   console.log("isRegister", isRegister);
 
-  return <>{isLogin ? <Login setPageType={setPageType}/> : <Register setPageType={setPageType}/>}</>;
+  return (
+    <>
+      {isLogin ? (
+        <Login setPageType={setPageType} />
+      ) : (
+        <Register setPageType={setPageType} />
+      )}
+    </>
+  );
 };
 
 export default Form;
 
-
-
-const Login = ({setPageType}) => {
+const Login = ({ setPageType }) => {
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width:1000px)");
 
-
   const login = async (values, onSubmitProps) => {
-    console.log('logging in', values);
+    console.log("logging in", values);
     try {
       await signInAuthUserWithEmailAndPassword(values.email, values.password);
       onSubmitProps.resetForm();
@@ -169,25 +173,35 @@ const Login = ({setPageType}) => {
   );
 };
 
-export const Register = ({setPageType}) => {
+export const Register = ({ setPageType }) => {
+  const [img_url, setImageUrl] = useState("");
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const dispatch = useDispatch();
 
   const register = async (values, onSubmitProps) => {
     console.log("registering");
+    console.log(values);
     try {
       const { user } = await createAuthUserWithEmailAndPassword(
         values.email,
         values.password
       );
       if (user) {
-        createUserDocumentFromAuth(user, {
+        if (values.picture) {
+          const url = await uploadFile(user, values.picture, "profile");
+          setImageUrl(url);
+          dispatch(setImg(img_url));
+        }
+        const additionalValues = {
           firstName: values.firstName,
           lastName: values.lastName,
           location: values.location,
           bio: values.bio,
-          picture: values.picture,
-        });
+          picture:
+            img_url || "https://avatars.githubusercontent.com/u/8075492?v=4",
+        };
+        createUserDocumentFromAuth(user, additionalValues);
         setPageType("login");
       }
       onSubmitProps.resetForm();
@@ -361,7 +375,6 @@ export const Register = ({setPageType}) => {
     </Formik>
   );
 };
-
 
 // const Form = () => {
 // const [pageType, setPageType] = useState("login");

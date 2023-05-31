@@ -17,9 +17,12 @@ import {
 import { setCurrentUser } from "./store/user/user.action";
 import { selectCurrentUser } from "./store/user/user.selector";
 import { selectMode } from "./store/user/user.selector";
+import MyPostWidget from "./pages/widgets/MyPostWidget";
+import UserWidget from "./pages/widgets/UserWidget";
 
 
 function App() {
+  console.log("Current mode:")
   const dispatch = useDispatch();
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
@@ -27,16 +30,15 @@ function App() {
         createUserDocumentFromAuth(user);
         dispatch(setCurrentUser(user));
       }
-      else {
-        dispatch(setCurrentUser(null));
-      }
     });
     return unsubscribe;
   }, []);
 
+
   const mode = useSelector(selectMode);
+  // const mode = 'light'
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const user = useSelector(selectCurrentUser);
+  // const user = useSelector(selectCurrentUser);
   return (
     <>
       <div className="app">
@@ -54,11 +56,13 @@ function App() {
               />
               {/* <Route path="/home" element={user ? <Home /> : <Navigate to="/" />} /> */}
               <Route path="/" element={<Home />} />
-              <Route
+              {/* <Route
                 path="/profile/:userId"
                 element={user ? <Profile /> : <Navigate to="/" />}
-              />
+              /> */}
               <Route path="/nav" element={<Navbar />} />
+              <Route path="/post" element={<MyPostWidget />} /> 
+              <Route path="/user" element={<UserWidget />} /> 
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </ThemeProvider>

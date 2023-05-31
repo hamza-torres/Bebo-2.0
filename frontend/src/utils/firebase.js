@@ -78,6 +78,16 @@ export const downloadFile = async (user, file, type) => {
   }
 };
 
+export const getProfilePhoto = async (userId) => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return userSnap.data().picture;
+  } else {
+    console.log("No such document!");
+  }
+};
+
 // export const createUser = async (email, password) => {
 //   const userCredential = await createUserWithEmailAndPassword(
 //     auth,
@@ -151,6 +161,18 @@ export const getPosts = async (user) => {
   }
 };
 
+export const setFirePosts = async (user, posts) => {
+  const postDocRef = doc(db, "posts", user.uid);
+  try {
+    console.log("adding posts to FireStore");
+    await setDoc(postDocRef, {
+      posts,
+    });
+  } catch (error) {
+    console.log("error setting user posts", error.message);
+  }
+};
+
 export const getUserPosts = async (user) => {
   const docRef = doc(db, "posts", user.uid);
   const docSnap = await getDoc(docRef);
@@ -188,38 +210,47 @@ export const createUserDocumentFromAuth = async (
   if (!userSnapshot.exists()) {
     const { email } = userAuth;
     const createdAt = new Date().toISOString();
-    try {
-      await setDoc(userDocRef, {
-        email,
-        createdAt,
-        ...additionalInformation,
-      });
-    } catch (error) {
-      console.log("error creating the user document", error.message);
+    const impressions = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
+    const viewedProfile = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
+    if (additionalInformation) {
+      const { firstName, lastName, location, bio, picture } =
+        additionalInformation;
+      try {
+        await setDoc(userDocRef, {
+          email,
+          createdAt,
+          impressions,
+          viewedProfile,
+          firstName,
+          lastName,
+          location,
+          bio,
+          picture,
+        });
+      } catch (error) {
+        console.log("error creating the user document", error.message);
+      }
+    }
+    else {
+      try {
+        await setDoc(userDocRef, {
+          email,
+          createdAt,
+          impressions,
+          viewedProfile,
+          ...additionalInformation,
+        });
+      } catch (error) {
+        console.log("error creating the user document", error.message);
+      }
     }
   }
 
   const postDocRef = doc(db, "posts", userAuth.uid);
   const postSnapShot = await getDoc(postDocRef);
   if (!postSnapShot.exists()) {
-    const posts = [
-      {
-        title: "Analyse Cars",
-        classes: "car",
-        outline: true,
-        count: true,
-      },
-      {
-        title: "Analyse Buses",
-        classes: "bus",
-        outline: true,
-        count: true,
-      },
-    ];
     try {
-      await setDoc(postDocRef, {
-        posts,
-      });
+      await setDoc(postDocRef, {});
     } catch (error) {
       console.log("error creating the posts document", error.message);
     }
