@@ -1,3 +1,0 @@
-export const ACCOUNTS_ACTION_TYPES = {
-  SET_ACCOUNTS: "SET_ACCOUNTS",
-};

@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "../../store/user/user.action";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
+import { signOutUser } from "../../utils/firebase";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -109,7 +110,7 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
-              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+              <MenuItem onClick={signOutUser}>Log Out</MenuItem>
             </Select>
           </FormControl>
         </FlexBetween>
@@ -182,7 +183,7 @@ const Navbar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>
+                <MenuItem onClick={signOutUser}>
                   Log Out
                 </MenuItem>
               </Select>

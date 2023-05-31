@@ -17,7 +17,7 @@ import {
 import { setCurrentUser } from "./store/user/user.action";
 import { selectCurrentUser } from "./store/user/user.selector";
 import { selectMode } from "./store/user/user.selector";
-import { setMode } from "./store/user/user.action";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -25,18 +25,11 @@ function App() {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) {
         createUserDocumentFromAuth(user);
-        getUser(user)
-        .then(response => response.json())
-        .then(data => {dispatch(setCurrentUser(data))})
+        dispatch(setCurrentUser(user));
       }
-
-      // const setUser = async () => {
-      //   const user_doc = await getUser(user.uid);
-      //   dispatch(
-      //     setLogin(user_doc)
-      //   );
-      // }
-      // setUser();
+      else {
+        dispatch(setCurrentUser(null));
+      }
     });
     return unsubscribe;
   }, []);
