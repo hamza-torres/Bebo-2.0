@@ -12,7 +12,8 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../state/states";
+// import { setUser } from "../../state/states";
+import { setCurrentUser } from "../../store/user/user.action";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import {

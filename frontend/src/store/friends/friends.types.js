@@ -1,0 +1,3 @@
+export const FRIENDS_ACTION_TYPES = {
+    SET_FRIENDS: 'SET_FRIENDS',
+}

@@ -22,7 +22,9 @@ import {
   Close,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode, seLogout } from "../../state/states";
+// import { setMode, seLogout } from "../../state/states";
+// import { setMode } from "../../store/mode/mode.action";
+import { setMode } from "../../store/user/user.action";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
 

@@ -14,7 +14,10 @@ import {
   getUser,
   onAuthStateChangedListener,
 } from "./utils/firebase";
-import { setUser } from "./state/states";
+import { setCurrentUser } from "./store/user/user.action";
+import { selectCurrentUser } from "./store/user/user.selector";
+import { selectMode } from "./store/user/user.selector";
+import { setMode } from "./store/user/user.action";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,7 +27,7 @@ function App() {
         createUserDocumentFromAuth(user);
         getUser(user)
         .then(response => response.json())
-        .then(data => {dispatch(setUser(data))})
+        .then(data => {dispatch(setCurrentUser(data))})
       }
 
       // const setUser = async () => {
@@ -38,9 +41,9 @@ function App() {
     return unsubscribe;
   }, []);
 
-  const mode = useSelector((state) => state.mode);
+  const mode = useSelector(selectMode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = useSelector((state) => state.user);
+  const user = useSelector(selectCurrentUser);
   return (
     <>
       <div className="app">
@@ -50,17 +53,17 @@ function App() {
             <Routes>
               {/* <Route
                 path="/"
-                element={isAuth ? <Navigate to="/home" /> : <Auth />}
+                element={user ? <Navigate to="/home" /> : <Auth />}
               /> */}
               <Route
                 path="/auth"
                 element={<Auth />}
               />
-              {/* <Route path="/home" element={isAuth ? <Home /> : <Navigate to="/" />} /> */}
+              {/* <Route path="/home" element={user ? <Home /> : <Navigate to="/" />} /> */}
               <Route path="/" element={<Home />} />
               <Route
                 path="/profile/:userId"
-                element={isAuth ? <Profile /> : <Navigate to="/" />}
+                element={user ? <Profile /> : <Navigate to="/" />}
               />
               <Route path="/nav" element={<Navbar />} />
               <Route path="*" element={<Navigate to="/" />} />
