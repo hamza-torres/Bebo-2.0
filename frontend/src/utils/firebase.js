@@ -54,7 +54,7 @@ export const uploadFile = async (user, file, type) => {
     const url = await getDownloadURL(storageRef);
     return url;
   }
-}
+};
 
 export const deleteFile = async (user, file, type) => {
   if (type === "profile") {
@@ -64,8 +64,7 @@ export const deleteFile = async (user, file, type) => {
     const storageRef = ref(storage, `posts/${user.uid}/${file.name}`);
     await deleteObject(storageRef);
   }
-}
-
+};
 
 export const downloadFile = async (user, file, type) => {
   if (type === "profile") {
@@ -77,8 +76,7 @@ export const downloadFile = async (user, file, type) => {
     const url = await getDownloadURL(storageRef);
     return url;
   }
-}
-
+};
 
 // export const createUser = async (email, password) => {
 //   const userCredential = await createUserWithEmailAndPassword(
@@ -99,18 +97,6 @@ export const downloadFile = async (user, file, type) => {
 //   return user;
 // };
 
-
-
-
-
-
-
-
-
-
-
-
-
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
@@ -125,7 +111,6 @@ export const signInWithGithubPopup = () =>
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
-
 export const addCollectionAndDocuments = async (
   collectionKey,
   objectsToAdd
@@ -137,13 +122,6 @@ export const addCollectionAndDocuments = async (
     batch.set(newDocRef, obj);
   });
   await batch.commit();
-};
-
-export const getCategoriesAndDocuments = async () => {
-  const collectionRef = collection(db, "categories");
-  const q = query(collectionRef);
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => doc.data());
 };
 
 export const getUsers = async () => {
@@ -173,6 +151,19 @@ export const getPosts = async (user) => {
   }
 };
 
+export const getUserPosts = async (user) => {
+  const docRef = doc(db, "posts", user.uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+    return docSnap.data().posts;
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+};
+
 export const setPosts = async (posts, user, additionalInformation = {}) => {
   const postDocRef = doc(db, "posts", user.uid);
   try {
@@ -194,10 +185,6 @@ export const createUserDocumentFromAuth = async (
 
   const userDocRef = doc(db, "users", userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
-
-  const postDocRef = doc(db, "posts", userAuth.uid);
-  const postSnapShot = await getDoc(postDocRef);
-
   if (!userSnapshot.exists()) {
     const { email } = userAuth;
     const createdAt = new Date().toISOString();
@@ -208,9 +195,12 @@ export const createUserDocumentFromAuth = async (
         ...additionalInformation,
       });
     } catch (error) {
-      console.log("error creating the user", error.message);
+      console.log("error creating the user document", error.message);
     }
   }
+
+  const postDocRef = doc(db, "posts", userAuth.uid);
+  const postSnapShot = await getDoc(postDocRef);
   if (!postSnapShot.exists()) {
     const posts = [
       {
@@ -231,9 +221,20 @@ export const createUserDocumentFromAuth = async (
         posts,
       });
     } catch (error) {
-      console.log("error creating the user", error.message);
+      console.log("error creating the posts document", error.message);
     }
   }
+
+  const friendsDocRef = doc(db, "friends", userAuth.uid);
+  const friendsSnapShot = await getDoc(friendsDocRef);
+  if (!friendsSnapShot.exists()) {
+    try {
+      await setDoc(friendsDocRef, {});
+    } catch (error) {
+      console.log("error creating the friends document", error.message);
+    }
+  }
+
   return userDocRef;
 };
 
@@ -253,18 +254,3 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
-
-// firebase.auth().currentUser.getIdTokenResult()
-//   .then((idTokenResult) => {
-//      // Confirm the user is an Admin.
-//      if (!!idTokenResult.claims.admin) {
-//        // Show admin UI.
-//        console.log('This is an admin user');
-//      } else {
-//        // Show regular user UI.
-// 	   console.log('This is an not admin user');
-//      }
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });

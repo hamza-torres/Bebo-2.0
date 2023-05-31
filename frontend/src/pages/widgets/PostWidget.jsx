@@ -11,7 +11,7 @@ import {
   import { useState } from "react";
   import { useDispatch, useSelector } from "react-redux";
   // import { setPost } from "../../state/states";
-  import { addPost } from "../../store/posts/posts.action";
+  import { addItemToPosts, removeItemFromPosts } from "../../store/posts/posts.action";
   
   const PostWidget = ({
     postId,

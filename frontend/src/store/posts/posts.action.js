@@ -5,11 +5,11 @@ import { POSTS_ACTION_TYPES } from "./posts.types";
 export const setPosts = (postsArray) =>
   createAction(POSTS_ACTION_TYPES.SET_POSTS, postsArray);
 
-export const removePost = (posts, postToRemove) => {
+const removePost = (posts, postToRemove) => {
   return posts.filter((post) => post.name !== postToRemove.name);
 };
 
-export const addPost = (posts, postToAdd) => {
+const addPost = (posts, postToAdd) => {
   return [...posts, postToAdd];
 };
 

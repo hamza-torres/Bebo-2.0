@@ -1,7 +1,7 @@
 import { createAction } from '../../utils/reducer/reducer.utils';
 import { FRIENDS_ACTION_TYPES } from './friends.types';
 
-export const setFriendsArray = (friendArray) =>
+export const setFriends = (friendArray) =>
 	createAction(FRIENDS_ACTION_TYPES.SET_FRIENDS, friendArray);
 
 const removeFriend = (friends, friendToRemove) => {
