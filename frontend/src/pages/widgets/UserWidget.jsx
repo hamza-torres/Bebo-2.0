@@ -3,6 +3,7 @@ import {
   EditOutlined,
   LocationOnOutlined,
   WorkOutlineOutlined,
+  PersonOutlineOutlined
 } from "@mui/icons-material";
 import { Box, Typography, Divider, useTheme } from "@mui/material";
 import UserImage from "../../components/UserImage";
@@ -13,13 +14,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { downloadFile, getProfilePhoto, getUser } from "../../utils/firebase";
 import { selectCurrentUser, selectImg } from "../../store/user/user.selector";
-
+import { selectFriends } from "../../store/friends/friends.selector";
 
 const UserWidget = ({ userId }) => {
   const [info, setInfo] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
   const [picturePath, setPicturePath] = useState(null);
+  const friends = useSelector(selectFriends);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
@@ -47,14 +49,8 @@ const UserWidget = ({ userId }) => {
     return null;
   }
 
-  const {
-    firstName,
-    lastName,
-    location,
-    bio,
-    viewedProfile,
-    impressions,
-  } = info;
+  const { firstName, lastName, location, bio, viewedProfile, impressions } =
+    info;
 
   return (
     <WidgetWrapper>
@@ -81,6 +77,7 @@ const UserWidget = ({ userId }) => {
               {firstName} {lastName}
             </Typography>
             <Typography color={medium}>{friends.length} friends</Typography>
+            {/* <Typography color={medium}>10 friends</Typography> */}
           </Box>
         </FlexBetween>
         <ManageAccountsOutlined />
@@ -95,7 +92,7 @@ const UserWidget = ({ userId }) => {
           <Typography color={medium}>{location}</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="1rem">
-          <WorkOutlineOutlined fontSize="large" sx={{ color: main }} />
+          <PersonOutlineOutlined fontSize="large" sx={{ color: main }} />
           <Typography color={medium}>{bio}</Typography>
         </Box>
       </Box>
@@ -128,7 +125,13 @@ const UserWidget = ({ userId }) => {
 
         <FlexBetween gap="1rem" mb="0.5rem">
           <FlexBetween gap="1rem">
-            <img src="../assets/twitter.png" alt="twitter" />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/124/124021.png"
+              alt="twitter"
+              width="40px"
+              height="40px"
+              style={{ borderRadius: '10px' }}
+            />
             <Box>
               <Typography color={main} fontWeight="500">
                 Twitter
@@ -141,7 +144,14 @@ const UserWidget = ({ userId }) => {
 
         <FlexBetween gap="1rem">
           <FlexBetween gap="1rem">
-            <img src="../assets/linkedin.png" alt="linkedin" />
+            <img
+              src="https://assets.stickpng.com/images/58e91afdeb97430e81906504.png"
+              // src="https://static-00.iconduck.com/assets.00/linkedin-icon-2048x2048-ya5g47j2.png"
+              alt="linkedin"
+              width="40px"
+              height="40px"
+              style={{ borderRadius: '10px' }}
+            />
             <Box>
               <Typography color={main} fontWeight="500">
                 Linkedin

@@ -13,7 +13,7 @@ import { selectCurrentUser, selectImg } from "../../store/user/user.selector";
 
 const Home = () => {
   const isNonMobile = useMediaQuery("(min-width:1000px)");
-  const _id = useSelector(selectCurrentUser)
+  const user = useSelector(selectCurrentUser)
   const picturePath = useSelector(selectImg)
   return (
     <Box>
@@ -26,7 +26,7 @@ const Home = () => {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
-          <UserWidget userId={_id} picturePath={picturePath} />
+          <UserWidget userId={user.uid} picturePath={picturePath} />
         </Box>
         {/* <Box
           flexBasis={isNonMobile ? "42%" : undefined}
