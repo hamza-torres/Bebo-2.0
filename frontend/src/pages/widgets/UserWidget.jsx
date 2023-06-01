@@ -40,7 +40,7 @@ const UserWidget = ({ userId }) => {
       const data = await getUser(userId);
       setInfo(data);
       const url = await getProfilePhoto(userId);
-      setPicturePath(url);
+      setPicturePath(data.picture);
     };
     return getUserInfo;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -145,7 +145,7 @@ const UserWidget = ({ userId }) => {
         <FlexBetween gap="1rem">
           <FlexBetween gap="1rem">
             <img
-              src="https://assets.stickpng.com/images/58e91afdeb97430e81906504.png"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png"
               // src="https://static-00.iconduck.com/assets.00/linkedin-icon-2048x2048-ya5g47j2.png"
               alt="linkedin"
               width="40px"

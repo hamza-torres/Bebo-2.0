@@ -13,7 +13,7 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 // import { setUser } from "../../state/states";
-import { setCurrentUser, setImg } from "../../store/user/user.action";
+import { setCurrentUser, setImg, setToken } from "../../store/user/user.action";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import {
@@ -178,6 +178,7 @@ export const Register = ({ setPageType }) => {
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const register = async (values, onSubmitProps) => {
     console.log("registering");
@@ -188,21 +189,20 @@ export const Register = ({ setPageType }) => {
         values.password
       );
       if (user) {
-        if (values.picture) {
-          const url = await uploadFile(user, values.picture, "profile");
-          setImageUrl(url);
-          dispatch(setImg(img_url));
-        }
         const additionalValues = {
           firstName: values.firstName,
           lastName: values.lastName,
           location: values.location,
           bio: values.bio,
-          picture:
-            img_url || "https://avatars.githubusercontent.com/u/8075492?v=4",
+          picture: "https://avatars.githubusercontent.com/u/8075492?v=4",
         };
-        createUserDocumentFromAuth(user, additionalValues);
-        setPageType("login");
+        if (values.picture) {
+          const url = await uploadFile(user, values.picture, "profile");
+          additionalValues.picture = url;
+        }
+        dispatch(setToken(user));
+        await createUserDocumentFromAuth(user, additionalValues);
+        navigate("/")
       }
       onSubmitProps.resetForm();
     } catch (error) {

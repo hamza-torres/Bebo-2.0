@@ -2,48 +2,41 @@ import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setFriends } from "../store/friends/friends.action";
+import { removeItemFromFriends } from "../store/friends/friends.action";
 import { selectFriends } from "../store/friends/friends.selector";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
+import { selectCurrentUser, selectToken } from "../store/user/user.selector";
 
-const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
+const Friend = ({ friend }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { _id } = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
-
+  const token = useSelector(selectToken);
+  const friends = useSelector(selectFriends);
+  const { uid, firstName, lastName, location, picture } = friend;
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const isFriend = friends.find((friend) => friend._id === friendId);
+  const isFriend = friends.find((friend) => friend.uid === uid);
 
   const patchFriend = async () => {
-    const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    if (isFriend) {
+      dispatch(removeItemFromFriends(friends, friend, token));
+      return;
+    }
+    dispatch(removeItemFromFriends(friends, friend, token));
   };
 
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
-        <UserImage image={userPicturePath} size="55px" />
+        <UserImage image={picture} size="55px" />
         <Box
           onClick={() => {
-            navigate(`/profile/${friendId}`);
+            navigate(`/profile/${uid}`);
             navigate(0);
           }}
         >
@@ -58,10 +51,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
               },
             }}
           >
-            {name}
+            {`${firstName} ${lastName}`}
           </Typography>
           <Typography color={medium} fontSize="0.75rem">
-            {subtitle}
+            {location}
           </Typography>
         </Box>
       </FlexBetween>

@@ -1,5 +1,5 @@
 import { Box, useMediaQuery } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../navbar/navbar";
 import UserWidget from "../widgets/UserWidget";
 import PostWidget from "../widgets/PostWidget";
@@ -9,12 +9,22 @@ import FriendListWidget from "../widgets/FriendListWidget";
 import AdvertWidget from "../widgets/AdvertWidget";
 import Friend from "../../components/Friend";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectImg } from "../../store/user/user.selector";
+import {
+  selectCurrentUser,
+  selectImg,
+  selectToken,
+} from "../../store/user/user.selector";
+import { setCurrentUser } from "../../store/user/user.action";
+import { getUser } from "../../utils/firebase";
 
 const Home = () => {
+  console.log('home now')
+  
   const isNonMobile = useMediaQuery("(min-width:1000px)");
-  const user = useSelector(selectCurrentUser)
-  const picturePath = useSelector(selectImg)
+  const user = useSelector(selectCurrentUser);
+  const token = useSelector(selectToken);
+
+  // const picturePath = useSelector(selectImg)
   return (
     <Box>
       <Navbar />
@@ -26,16 +36,17 @@ const Home = () => {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
-          <UserWidget userId={user.uid} picturePath={picturePath} />
+          {/* <UserWidget userId={user.uid} picturePath={picturePath} /> */}
+          <UserWidget userId={token.uid} />
         </Box>
-        {/* <Box
+        <Box
           flexBasis={isNonMobile ? "42%" : undefined}
           mt={isNonMobile ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={picturePath} />
-          <PostsWidget userId={_id} />
+          <MyPostWidget picturePath={user.picture} />
+          {/* <PostsWidget userId={_id} /> */}
         </Box>
-        {isNonMobile && (
+        {/* {isNonMobile && (
           <Box flexBasis="26%">
             <AdvertWidget />
             <Box m="2rem 0" />

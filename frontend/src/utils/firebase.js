@@ -141,25 +141,32 @@ export const getUsers = async () => {
   return querySnapshot.docs.map((doc) => doc.data());
 };
 
+export const getAllPosts = async () => {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef);
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data());
+}
+
 export const getUser = async (userId) => {
   const userRef = doc(db, "users", userId);
   const userSnap = await getDoc(userRef);
   if (userSnap.exists()) {
     return userSnap.data();
   } else {
-    console.log("No such document!");
+    return null;
   }
 };
 
-export const getPosts = async (user) => {
-  const docRef = doc(db, "posts", user.uid);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    return docSnap.data();
-  } else {
-    console.log("No such document!");
-  }
-};
+// export const getPosts = async (user) => {
+//   const docRef = doc(db, "posts", user.uid);
+//   const docSnap = await getDoc(docRef);
+//   if (docSnap.exists()) {
+//     return docSnap.data();
+//   } else {
+//     console.log("No such document!");
+//   }
+// };
 
 export const setFirePosts = async (user, posts) => {
   const postDocRef = doc(db, "posts", user.uid);
@@ -178,7 +185,6 @@ export const getUserPosts = async (user) => {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
     return docSnap.data().posts;
   } else {
     // docSnap.data() will be undefined in this case
@@ -186,16 +192,64 @@ export const getUserPosts = async (user) => {
   }
 };
 
-export const setPosts = async (posts, user, additionalInformation = {}) => {
-  const postDocRef = doc(db, "posts", user.uid);
+export const setFireFriends = async (user, friends) => {
+  const postDocRef = doc(db, "friends", user.uid);
   try {
-    console.log("adding posts to FireStore");
+    console.log("adding friends to FireStore");
     await setDoc(postDocRef, {
-      posts,
-      ...additionalInformation,
+      friends,
     });
   } catch (error) {
-    console.log("error setting user posts", error.message);
+    console.log("error setting user friends", error.message);
+  }
+};
+
+export const getUserFriends = async (user) => {
+  const docRef = doc(db, "friends", user.uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().friends;
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+};
+
+export const updatePostLikes = async (postUserId, postId, userId, action) => {
+  try {
+    const documentRef = doc(db, "posts", postUserId);
+    const documentSnapshot = await getDoc(documentRef);
+
+    if (documentSnapshot.exists()) {
+      const postsArray = documentSnapshot.data().posts;
+
+      // Find the index of the post with the specified postId
+      const postIndex = postsArray.findIndex((post) => post.postId === postId);
+
+      if (postIndex !== -1) {
+        // Update the likes array based on the action
+        if (action === "add") {
+          postsArray[postIndex].likes.push(userId);
+        } else if (action === "remove") {
+          const userIndex = postsArray[postIndex].likes.indexOf(userId);
+          if (userIndex !== -1) {
+            postsArray[postIndex].likes.splice(userIndex, 1);
+          }
+        }
+
+        // Update the Firestore document with the modified posts array
+        await updateDoc(documentRef, { posts: postsArray });
+
+        console.log("Post likes updated successfully.");
+      } else {
+        console.log("Post not found.");
+      }
+    } else {
+      console.log("Document does not exist.");
+    }
+  } catch (error) {
+    console.error("Error updating post likes:", error);
   }
 };
 
@@ -208,7 +262,7 @@ export const createUserDocumentFromAuth = async (
   const userDocRef = doc(db, "users", userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
   if (!userSnapshot.exists()) {
-    const { email } = userAuth;
+    const { email, uid } = userAuth;
     const createdAt = new Date().toISOString();
     const impressions = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
     const viewedProfile = Math.floor(Math.random() * (1000 - 10 + 1)) + 10;
@@ -217,6 +271,7 @@ export const createUserDocumentFromAuth = async (
         additionalInformation;
       try {
         await setDoc(userDocRef, {
+          uid,
           email,
           createdAt,
           impressions,
@@ -230,8 +285,7 @@ export const createUserDocumentFromAuth = async (
       } catch (error) {
         console.log("error creating the user document", error.message);
       }
-    }
-    else {
+    } else {
       try {
         await setDoc(userDocRef, {
           email,

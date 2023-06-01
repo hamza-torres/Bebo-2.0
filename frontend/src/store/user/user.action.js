@@ -4,8 +4,9 @@ import { USER_ACTION_TYPES } from "./user.types";
 export const setCurrentUser = (user) =>
   createAction(USER_ACTION_TYPES.SET_CURRENT_USER, user);
 
-export const setMode = () =>
-  createAction(USER_ACTION_TYPES.SET_MODE);
+export const setMode = () => createAction(USER_ACTION_TYPES.SET_MODE);
 
-export const setImg = (img) =>
-  createAction(USER_ACTION_TYPES.SET_IMG, img);
+export const setImg = (img) => createAction(USER_ACTION_TYPES.SET_IMG, img);
+
+export const setToken = (token) =>
+  createAction(USER_ACTION_TYPES.SET_TOKEN, token);

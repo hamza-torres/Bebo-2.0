@@ -14,7 +14,7 @@ import {
   getUser,
   onAuthStateChangedListener,
 } from "./utils/firebase";
-import { setCurrentUser } from "./store/user/user.action";
+import { setCurrentUser, setToken } from "./store/user/user.action";
 import { selectCurrentUser } from "./store/user/user.selector";
 import { selectMode } from "./store/user/user.selector";
 import MyPostWidget from "./pages/widgets/MyPostWidget";
@@ -22,13 +22,19 @@ import UserWidget from "./pages/widgets/UserWidget";
 
 
 function App() {
-  console.log("Current mode:")
   const dispatch = useDispatch();
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) {
         createUserDocumentFromAuth(user);
-        dispatch(setCurrentUser(user));
+        dispatch(setToken(user));
+        console.log('user is: ', user)
+        getUser(user.uid).then((info) => {
+          if (info) {
+            dispatch(setCurrentUser(info));
+          }
+          console.log('info is: ', info)
+        })
       }
     });
     return unsubscribe;

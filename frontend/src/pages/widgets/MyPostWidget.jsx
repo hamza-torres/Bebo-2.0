@@ -21,67 +21,72 @@ import FlexBetween from "../../components/FlexBetween";
 import Dropzone from "react-dropzone";
 import UserImage from "../../components/UserImage";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/posts/posts.action";
 import { selectPosts } from "../../store/posts/posts.selector";
 import { addItemToPosts } from "../../store/posts/posts.action";
-import { selectCurrentUser, selectImg } from "../../store/user/user.selector";
-import { setFirePosts, uploadFile } from "../../utils/firebase";
+import {
+  selectCurrentUser,
+  selectImg,
+  selectToken,
+} from "../../store/user/user.selector";
+import { v4 as uuidv4 } from 'uuid';
+import { getProfilePhoto, setFirePosts, uploadFile } from "../../utils/firebase";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
+  const [picPath, setPicPath] = useState(null);
   const { palette } = useTheme();
-  // const { _id } = useSelector((state) => state.user);
-  // const token = useSelector((state) => state.token);
-  const user = useSelector(selectCurrentUser);
+  const token = useSelector(selectToken);
   const posts = useSelector(selectPosts);
+  const user = useSelector(selectCurrentUser);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
-  const img_url = useSelector(selectImg)
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      // const data = await getUser(userId);
+      // setInfo(data);
+      const url = await getProfilePhoto(token.uid);
+      setPicPath(url);
+    };
+    return getUserInfo;
+  }, []); 
 
   const handlePost = async () => {
-    const formData = new FormData();
-    formData.append("description", post)
+    const data = {
+      postId: uuidv4(),
+      userId: token.uid || "",
+      name: `${user.firstName} ${user.lastName}`,
+      description: post || " ",
+      location: user.location,
+      picture: "",
+      likes: [],
+      comments: [],
+      userPicturePath: user.picture,
+    };
     if (isImage) {
-      console.log('there is an image')
-      const img_url = uploadFile(user, image, "post")
-      formData.append("picture", img_url);
+      console.log("there is an image");
+      const res = await uploadFile(token, image, "post");
+      console.log("image url", res);
+      data.picture = res;
     }
-    dispatch(addItemToPosts(formData))
-    setFirePosts(posts);
+    console.log(data);
+    dispatch(addItemToPosts(token, posts, data));
+
     setImage(null);
     setPost("");
-  }
-
-  // const handlePost = async () => {
-  //   const formData = new FormData();
-  //   formData.append("userId", _id);
-  //   formData.append("description", post);
-  //   if (image) {
-  //     formData.append("picture", image);
-  //     formData.append("picturePath", image.name);
-  //   }
-
-  //   const response = await fetch(`http://localhost:3001/posts`, {
-  //     method: "POST",
-  //     headers: { Authorization: `Bearer ${token}` },
-  //     body: formData,
-  //   });
-  //   const posts = await response.json();
-  //   dispatch(setPosts({ posts }));
-  //   setImage(null);
-  //   setPost("");
-  // };
+  };
 
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        <UserImage image={img_url} />
+        <UserImage image={picPath} />
         <InputBase
           placeholder="What's on your mind..."
           onChange={(e) => setPost(e.target.value)}
