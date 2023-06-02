@@ -5,6 +5,9 @@ import { FRIENDS_ACTION_TYPES } from './friends.types';
 export const setFriends = (friendArray) =>
 	createAction(FRIENDS_ACTION_TYPES.SET_FRIENDS, friendArray);
 
+export const setUsers = (userArray) =>
+	createAction(FRIENDS_ACTION_TYPES.SET_USERS, userArray);
+
 const removeFriend = (friends, friendToRemove) => {
 	return friends.filter(
 		(friend) => friend.uid !== friendToRemove.uid

@@ -20,6 +20,7 @@ import {
   query,
   getDocs,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -145,7 +146,8 @@ export const getAllPosts = async () => {
   const postsRef = collection(db, "posts");
   const q = query(postsRef);
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => doc.data());
+  const posts = querySnapshot.docs.map((doc) => doc.data());
+  return posts.flatMap(obj => Object.values(obj.posts || []))
 }
 
 export const getUser = async (userId) => {
@@ -169,6 +171,7 @@ export const getUser = async (userId) => {
 // };
 
 export const setFirePosts = async (user, posts) => {
+  console.log('stuff in posts:', posts);
   const postDocRef = doc(db, "posts", user.uid);
   try {
     console.log("adding posts to FireStore");
@@ -218,14 +221,17 @@ export const getUserFriends = async (user) => {
 
 export const updatePostLikes = async (postUserId, postId, userId, action) => {
   try {
+    console.log('Beginning like process')
     const documentRef = doc(db, "posts", postUserId);
     const documentSnapshot = await getDoc(documentRef);
 
     if (documentSnapshot.exists()) {
       const postsArray = documentSnapshot.data().posts;
+      console.log("This is the posts array retrieved", postsArray)
 
       // Find the index of the post with the specified postId
       const postIndex = postsArray.findIndex((post) => post.postId === postId);
+      console.log('this is the index of the post with the specified postId', postIndex)
 
       if (postIndex !== -1) {
         // Update the likes array based on the action

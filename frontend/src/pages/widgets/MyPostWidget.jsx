@@ -32,7 +32,8 @@ import {
   selectToken,
 } from "../../store/user/user.selector";
 import { v4 as uuidv4 } from 'uuid';
-import { getProfilePhoto, setFirePosts, uploadFile } from "../../utils/firebase";
+import { getProfilePhoto, getUser, setFirePosts, uploadFile } from "../../utils/firebase";
+import { setCurrentUser } from "../../store/user/user.action";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
@@ -59,12 +60,21 @@ const MyPostWidget = ({ picturePath }) => {
   }, []); 
 
   const handlePost = async () => {
+    getUser(user.uid).then((info) => {
+      if (info) {
+        dispatch(setCurrentUser(info));
+      }
+      console.log("info is: ", info);
+    });
+
+
+
     const data = {
       postId: uuidv4(),
       userId: token.uid || "",
       name: `${user.firstName} ${user.lastName}`,
       description: post || " ",
-      location: user.location,
+      location: user.location || "",
       picture: "",
       likes: [],
       comments: [],

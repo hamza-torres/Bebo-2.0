@@ -8,7 +8,7 @@ import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "../../components/FlexBetween";
 import Friend from "../../components/Friend";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { setPost } from "../../state/states";
 import {
@@ -19,6 +19,8 @@ import { selectToken } from "../../store/user/user.selector";
 import { getUserPosts, updatePostLikes } from "../../utils/firebase";
 
 const PostWidget = ({ post }) => {
+  const token = useSelector(selectToken);
+  const [friend, setFriend] = useState(null);
   const {
     postId,
     userId,
@@ -33,12 +35,14 @@ const PostWidget = ({ post }) => {
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(selectToken);
-  const isLiked = Boolean(likes[loggedInUserId]);
+  const isLiked = Boolean(likes[token.uid]);
   const likeCount = Object.keys(likes).length;
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
+
+  
 
   const patchLike = async () => {
     if (isLiked) {
@@ -53,10 +57,7 @@ const PostWidget = ({ post }) => {
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
-        friendId={userId}
-        name={name}
-        subtitle={location}
-        userPicturePath={userPicturePath}
+        friend={userId}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}

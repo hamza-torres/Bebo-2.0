@@ -4,18 +4,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/posts/posts.action";
 import { selectPosts } from "../../store/posts/posts.selector";
 import PostWidget from "./PostWidget";
+import { getAllPosts } from "../../utils/firebase";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
   const posts = useSelector(selectPosts);
 
   const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    // const response = await fetch("http://localhost:3001/posts", {
+    //   method: "GET",
+    //   headers: { Authorization: `Bearer ${token}` },
+    // });
+    // const data = await response.json();
+    // dispatch(setPosts({ posts: data }));
+    getAllPosts().then((data) => {
+      dispatch(setPosts(data));
+    })
+
 
   };
 

@@ -44,7 +44,7 @@ const Home = () => {
           mt={isNonMobile ? undefined : "2rem"}
         >
           <MyPostWidget picturePath={user.picture} />
-          {/* <PostsWidget userId={_id} /> */}
+          <PostsWidget userId={token.uid} />
         </Box>
         {/* {isNonMobile && (
           <Box flexBasis="26%">

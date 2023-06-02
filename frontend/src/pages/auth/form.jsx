@@ -19,6 +19,7 @@ import FlexBetween from "../../components/FlexBetween";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
+  getUser,
   signInAuthUserWithEmailAndPassword,
   uploadFile,
 } from "../../utils/firebase";
@@ -202,6 +203,12 @@ export const Register = ({ setPageType }) => {
         }
         dispatch(setToken(user));
         await createUserDocumentFromAuth(user, additionalValues);
+        getUser(user.uid).then((info) => {
+          if (info) {
+            dispatch(setCurrentUser(info));
+          }
+          console.log("info is: ", info);
+        });
         navigate("/")
       }
       onSubmitProps.resetForm();
