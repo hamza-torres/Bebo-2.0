@@ -52,6 +52,46 @@ def process_post_image(post_id, user_id):
     else:
         print("Document not found.")
         
+
+
+def process_all_posts():
+    # Assuming you have already initialized the Firestore client
+
+    # Get a reference to the "posts" collection
+    posts_ref = firestore.client().collection("posts")
+
+    # Iterate through each document in the "posts" collection
+    for doc in posts_ref.stream():
+        # Get the data of the document
+        data = doc.to_dict()
+
+        # Get the "posts" array from the document data
+        posts_array = data.get("posts", [])
+
+        # Iterate through each post in the "posts" array
+        for post in posts_array:
+            # Get the necessary data from the post object
+            post_id = post.get("postId")
+            user_id = post.get("userId")
+
+            # Call the process_post_image function with the necessary data
+            process_post_image(post_id, user_id)
+
+        print("All posts processed successfully.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
 if __name__ == '__main__':
     # Code to be executed when the file is run directly

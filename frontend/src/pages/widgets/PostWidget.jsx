@@ -17,9 +17,17 @@ import {
 } from "../../store/posts/posts.action";
 import { selectToken } from "../../store/user/user.selector";
 import { getUserPosts, updatePostLikes } from "../../utils/firebase";
+import ChipTags from "../../components/ChipTags";
+
+const defaultTags = {
+  adult: "NONE",
+  medical: "NONE",
+  spoofed: "NONE",
+  violence: "NONE",
+  racy: "NONE",
+};
 
 const PostWidget = ({ post }) => {
-
   // const [friend, setFriend] = useState(null);
   const {
     postId,
@@ -31,8 +39,9 @@ const PostWidget = ({ post }) => {
     userPicturePath,
     likes,
     comments,
+    tags,
   } = post;
-  const friend = {userId, name, userPicturePath, location}
+  const friend = { userId, name, userPicturePath, location };
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(selectToken);
@@ -57,16 +66,12 @@ const PostWidget = ({ post }) => {
   };
 
   useEffect(() => {
-    setIsliked(likes.includes(user.uid))
-  }, [])
-
-
+    setIsliked(likes.includes(user.uid));
+  }, []);
 
   return (
     <WidgetWrapper m="2rem 0">
-      <Friend
-        friend={friend}
-      />
+      <Friend friend={friend} />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
@@ -79,6 +84,7 @@ const PostWidget = ({ post }) => {
           src={picture}
         />
       )}
+      {tags ? <ChipTags tags={tags} /> : <ChipTags tags={defaultTags} />}
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
           <FlexBetween gap="0.3rem">

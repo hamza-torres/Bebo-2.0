@@ -62,33 +62,65 @@ const MyPostWidget = ({ picturePath }) => {
     return getUserInfo;
   }, []);
 
-  const handlePost = async () => {
-    getUser(user.uid).then((info) => {
-      if (info) {
-        dispatch(setCurrentUser(info));
+  const processPostImage = async (postId, userId) => {
+    try {
+      const response = await fetch('/api/process-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ postId, userId }),
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        // Process the result received from the backend
+        console.log(result);
+      } else {
+        console.error('Request failed with status:', response.status);
       }
-    });
-    const data = {
-      postId: uuidv4(),
-      userId: token.uid || "",
-      name: `${user.firstName} ${user.lastName}`,
-      description: post || " ",
-      location: user.location || "",
-      picture: "",
-      likes: [],
-      comments: [],
-      tags: [],
-      userPicturePath: user.picture,
-    };
-    if (isImage) {
-      console.log("there is an image");
-      const res = await uploadFile(token, image, "post");
-      console.log("image url", res);
-      data.picture = res;
+    } catch (error) {
+      console.error('Request failed with error:', error);
     }
-    console.log(data);
-    dispatch(addItemToPosts(token, posts, data));
-    
+  };
+
+  const handlePost = async () => {
+    const makePost = async () => {
+      getUser(user.uid).then((info) => {
+        if (info) {
+          dispatch(setCurrentUser(info));
+        }
+      });
+      const data = {
+        postId: uuidv4(),
+        userId: token.uid || "",
+        name: `${user.firstName} ${user.lastName}`,
+        description: post || " ",
+        location: user.location || "",
+        picture: "",
+        likes: [],
+        comments: [],
+        tags: {
+          adult: "NONE",
+          medical: "NONE",
+          spoofed: "NONE",
+          violence: "NONE",
+          racy: "NONE",
+        },
+        userPicturePath: user.picture,
+      };
+      if (isImage) {
+        console.log("there is an image");
+        const res = await uploadFile(token, image, "post");
+        console.log("image url", res);
+        data.picture = res;
+      }
+      console.log(data);
+      dispatch(addItemToPosts(token, posts, data));
+    } 
+    makePost().then(() => {
+      processPostImage(data.postId, data.userId); 
+    });
     setIsImage(false);
     setImage(null);
     setPost("");
