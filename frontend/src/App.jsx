@@ -11,36 +11,53 @@ import { createTheme } from "@mui/material";
 import { themeSettings } from "./theme";
 import {
   createUserDocumentFromAuth,
+  getAllPosts,
   getUser,
+  getUsers,
   onAuthStateChangedListener,
+  updatePostLikes,
 } from "./utils/firebase";
-import { setUser } from "./state/states";
+import { setCurrentUser, setToken } from "./store/user/user.action";
+import { selectCurrentUser } from "./store/user/user.selector";
+import { selectMode } from "./store/user/user.selector";
+import MyPostWidget from "./pages/widgets/MyPostWidget";
+import UserWidget from "./pages/widgets/UserWidget";
+import { setUsers } from "./store/friends/friends.action";
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser)
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) {
         createUserDocumentFromAuth(user);
-        getUser(user)
-        .then(response => response.json())
-        .then(data => {dispatch(setUser(data))})
+        dispatch(setToken(user));
+        console.log("user is: ", user);
+        getUser(user.uid).then((info) => {
+          if (info) {
+            dispatch(setCurrentUser(info));
+          }
+          console.log("info is: ", info);
+        });
+        getUsers().then((users) => {
+          if (users) {
+            dispatch(setUsers(users));
+          }
+          console.log("users is: ", users);
+        });
       }
-
-      // const setUser = async () => {
-      //   const user_doc = await getUser(user.uid);
-      //   dispatch(
-      //     setLogin(user_doc)
-      //   );
-      // }
-      // setUser();
     });
+    
     return unsubscribe;
   }, []);
 
-  const mode = useSelector((state) => state.mode);
+
+
+
+  const mode = useSelector(selectMode);
+  // const mode = 'light'
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = useSelector((state) => state.user);
+  // const user = useSelector(selectCurrentUser);
   return (
     <>
       <div className="app">
@@ -50,19 +67,18 @@ function App() {
             <Routes>
               {/* <Route
                 path="/"
-                element={isAuth ? <Navigate to="/home" /> : <Auth />}
+                element={user ? <Navigate to="/home" /> : <Auth />}
               /> */}
-              <Route
-                path="/auth"
-                element={<Auth />}
-              />
-              {/* <Route path="/home" element={isAuth ? <Home /> : <Navigate to="/" />} /> */}
+              <Route path="/auth" element={<Auth />} />
+              {/* <Route path="/home" element={user ? <Home /> : <Navigate to="/" />} /> */}
               <Route path="/" element={<Home />} />
               <Route
                 path="/profile/:userId"
-                element={isAuth ? <Profile /> : <Navigate to="/" />}
+                element={user ? <Profile /> : <Navigate to="/" />}
               />
               <Route path="/nav" element={<Navbar />} />
+              <Route path="/post" element={<MyPostWidget />} />
+              <Route path="/user" element={<UserWidget />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </ThemeProvider>
