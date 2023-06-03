@@ -46,6 +46,7 @@ def process_post_image(post_id, user_id):
 
             # Update the Firestore document with the modified posts array
             doc_ref.update({'posts': posts_array})
+            return result
         else:
             print("Post not found.")
     else:

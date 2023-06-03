@@ -1,5 +1,5 @@
 # Import flask and datetime module for showing date and time
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import sys
@@ -10,23 +10,23 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from moderation.explicit import detect_safe_search_uri
+from firebase import process_post_image
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route("/analyse", methods=["GET", "POST"])
-def analyze():
-    print("Analyzing")
-    # if request.method == "POST":
-    #     print(request.files)
-    #     if request.files:
-    #         image = request.files["image"]
-    #         image.save(os.path.join("images", image.filename))
-    #         return {"status": "OK"}
-    #     else:
-    #         return {"status": "ERROR"}
-    # else:
-    #     return {"status": "ERROR"}
+@app.route('/process-image', methods=['POST'])
+def process_image():
+    # Retrieve the postId and userId from the request payload
+    data = request.get_json()
+    postId = data.get('postId')
+    userId = data.get('userId')
+
+    # Process the postId and userId as needed
+    result = process_post_image(postId, userId)
+
+    # Return the result as a JSON response
+    return jsonify(result), 201
 
 
 
