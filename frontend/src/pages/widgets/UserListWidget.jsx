@@ -6,28 +6,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFriends, setUsers } from "../../store/friends/friends.action";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import { selectToken } from "../../store/user/user.selector";
-import { selectFriends } from "../../store/friends/friends.selector";
+import {
+  selectFriends,
+  selectUsers,
+} from "../../store/friends/friends.selector";
 import { getUserFriends, getUsers } from "../../utils/firebase";
 
-const FriendListWidget = ({ userId }) => {
+const UserListWidget = () => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
   const token = useSelector(selectToken);
-  const friends = useSelector(selectFriends);
-  // const friends = useSelector(selectFriends);
-  const [list, setList] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    getUserFriends(userId).then((friends) => {
-      if (friends) {
-        const filteredFriends = friends.filter(
-          (friend) => friend.userId !== token.uid
-        );
-        setList(filteredFriends);
-        dispatch(setFriends(filteredFriends));
-      }
+    getUsers().then((users) => {
+      const filteredUsers = users.filter((User) => User.uid !== token.uid);
+      const transformedUsers = filteredUsers.map((user) => ({
+        name: `${user.firstName} ${user.lastName}`,
+        location: user.location,
+        userPicturePath: user.picture,
+        userId: user.uid,
+      }));
+      setUsers(transformedUsers);
+      // setList(transformedUsers);
     });
-  }, [friends]);
+  }, []);
 
   return (
     <WidgetWrapper>
@@ -37,15 +40,17 @@ const FriendListWidget = ({ userId }) => {
         fontWeight="500"
         sx={{ mb: "1.5rem" }}
       >
-        Friend List
+        User List
       </Typography>
-      <Box display="flex" flexDirection="column" gap="1.5rem">
-        {list.map((friend) => (
-          <Friend friend={friend} key={friend.userId} />
-        ))}
-      </Box>
+      {users && (
+        <Box display="flex" flexDirection="column" gap="1.5rem">
+          {users.map((friend) => (
+            <Friend friend={friend} key={friend.userId} />
+          ))}
+        </Box>
+      )}
     </WidgetWrapper>
   );
 };
 
-export default FriendListWidget;
+export default UserListWidget;

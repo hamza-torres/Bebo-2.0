@@ -16,6 +16,7 @@ import {
 } from "../../store/user/user.selector";
 import { setCurrentUser } from "../../store/user/user.action";
 import { getUser } from "../../utils/firebase";
+import UserListWidget from "../widgets/UserListWidget";
 
 const Home = () => {
   console.log("home now");
@@ -39,7 +40,8 @@ const Home = () => {
           {/* <UserWidget userId={user.uid} picturePath={picturePath} /> */}
           <UserWidget userId={token.uid} />
           <Box m="2rem 0" />
-          <FriendListWidget userId={token} userlist={true}/>
+          <UserListWidget />
+          {/* <FriendListWidget userId={token} userlist/> */}
         </Box>
         <Box
           flexBasis={isNonMobile ? "42%" : undefined}
@@ -52,7 +54,7 @@ const Home = () => {
           <Box flexBasis="26%">
             <AdvertWidget />
             <Box m="2rem 0" />
-            <FriendListWidget userId={token} />
+            <FriendListWidget userId={token.uid} />
           </Box>
         )}
       </Box>

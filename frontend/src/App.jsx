@@ -32,18 +32,15 @@ function App() {
       if (user) {
         createUserDocumentFromAuth(user);
         dispatch(setToken(user));
-        console.log("user is: ", user);
         getUser(user.uid).then((info) => {
           if (info) {
             dispatch(setCurrentUser(info));
           }
-          console.log("info is: ", info);
         });
         getUsers().then((users) => {
           if (users) {
             dispatch(setUsers(users));
           }
-          console.log("users is: ", users);
         });
       }
     });

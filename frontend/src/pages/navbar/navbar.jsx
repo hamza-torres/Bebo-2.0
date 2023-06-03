@@ -60,7 +60,7 @@ const Navbar = () => {
         lastName: "Doe",
       })
     );
-    dispatch(setMode("light"));
+    dispatch(setMode("dark"));
     dispatch(setFriends([]));
     dispatch(setPosts([]));
     navigate("/auth");
