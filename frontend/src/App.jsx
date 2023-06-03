@@ -26,6 +26,7 @@ import { setUsers } from "./store/friends/friends.action";
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser)
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) {
@@ -71,10 +72,10 @@ function App() {
               <Route path="/auth" element={<Auth />} />
               {/* <Route path="/home" element={user ? <Home /> : <Navigate to="/" />} /> */}
               <Route path="/" element={<Home />} />
-              {/* <Route
+              <Route
                 path="/profile/:userId"
                 element={user ? <Profile /> : <Navigate to="/" />}
-              /> */}
+              />
               <Route path="/nav" element={<Navbar />} />
               <Route path="/post" element={<MyPostWidget />} />
               <Route path="/user" element={<UserWidget />} />

@@ -31,8 +31,13 @@ import {
   selectImg,
   selectToken,
 } from "../../store/user/user.selector";
-import { v4 as uuidv4 } from 'uuid';
-import { getProfilePhoto, getUser, setFirePosts, uploadFile } from "../../utils/firebase";
+import { v4 as uuidv4 } from "uuid";
+import {
+  getProfilePhoto,
+  getUser,
+  setFirePosts,
+  uploadFile,
+} from "../../utils/firebase";
 import { setCurrentUser } from "../../store/user/user.action";
 
 const MyPostWidget = ({ picturePath }) => {
@@ -51,24 +56,18 @@ const MyPostWidget = ({ picturePath }) => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      // const data = await getUser(userId);
-      // setInfo(data);
       const url = await getProfilePhoto(token.uid);
       setPicPath(url);
     };
     return getUserInfo;
-  }, []); 
+  }, []);
 
   const handlePost = async () => {
     getUser(user.uid).then((info) => {
       if (info) {
         dispatch(setCurrentUser(info));
       }
-      console.log("info is: ", info);
     });
-
-
-
     const data = {
       postId: uuidv4(),
       userId: token.uid || "",
@@ -88,7 +87,8 @@ const MyPostWidget = ({ picturePath }) => {
     }
     console.log(data);
     dispatch(addItemToPosts(token, posts, data));
-
+    
+    setIsImage(false);
     setImage(null);
     setPost("");
   };

@@ -29,12 +29,12 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAkxKSyplb0QcyH0FHyHQOHX4wFc1-7ap8",
-  authDomain: "bebo-2.firebaseapp.com",
-  projectId: "bebo-2",
-  storageBucket: "bebo-2.appspot.com",
-  messagingSenderId: "776062846459",
-  appId: "1:776062846459:web:e099c6ee2dff6dd6a6775e",
+  apiKey: "AIzaSyB60xxt_viNV9x0xhF-7FqiIkEnfxypm3c",
+  authDomain: "extended-creek-388409.firebaseapp.com",
+  projectId: "extended-creek-388409",
+  storageBucket: "extended-creek-388409.appspot.com",
+  messagingSenderId: "328476895839",
+  appId: "1:328476895839:web:7a31ad02673c69c6a249ea"
 };
 
 // Initialize Firebase

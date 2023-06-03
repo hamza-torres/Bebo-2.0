@@ -21,6 +21,7 @@ import {
   Menu,
   Close,
 } from "@mui/icons-material";
+// import HomeIcon from '@mui/icons-material/Home';
 import { useDispatch, useSelector } from "react-redux";
 // import { setMode, seLogout } from "../../state/states";
 // import { setMode } from "../../store/mode/mode.action";
@@ -106,6 +107,7 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
+
           <Message sx={{ fontSize: "25px" }} />
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />

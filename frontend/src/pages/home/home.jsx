@@ -18,8 +18,8 @@ import { setCurrentUser } from "../../store/user/user.action";
 import { getUser } from "../../utils/firebase";
 
 const Home = () => {
-  console.log('home now')
-  
+  console.log("home now");
+
   const isNonMobile = useMediaQuery("(min-width:1000px)");
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectToken);
@@ -38,6 +38,8 @@ const Home = () => {
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
           {/* <UserWidget userId={user.uid} picturePath={picturePath} /> */}
           <UserWidget userId={token.uid} />
+          <Box m="2rem 0" />
+          <FriendListWidget userId={token} userlist={true}/>
         </Box>
         <Box
           flexBasis={isNonMobile ? "42%" : undefined}
@@ -46,13 +48,13 @@ const Home = () => {
           <MyPostWidget picturePath={user.picture} />
           <PostsWidget userId={token.uid} />
         </Box>
-        {/* {isNonMobile && (
+        {isNonMobile && (
           <Box flexBasis="26%">
             <AdvertWidget />
             <Box m="2rem 0" />
-            <FriendListWidget userId={_id} />
+            <FriendListWidget userId={token} />
           </Box>
-        )} */}
+        )}
       </Box>
     </Box>
   );

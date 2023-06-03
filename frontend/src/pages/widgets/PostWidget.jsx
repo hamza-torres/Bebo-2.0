@@ -20,7 +20,7 @@ import { getUserPosts, updatePostLikes } from "../../utils/firebase";
 
 const PostWidget = ({ post }) => {
   const token = useSelector(selectToken);
-  const [friend, setFriend] = useState(null);
+  // const [friend, setFriend] = useState(null);
   const {
     postId,
     userId,
@@ -32,6 +32,7 @@ const PostWidget = ({ post }) => {
     likes,
     comments,
   } = post;
+  const friend = {userId, name, userPicturePath, location}
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(selectToken);
@@ -42,7 +43,7 @@ const PostWidget = ({ post }) => {
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
-  
+  console.log('this is the uid being passed through the post', userId)
 
   const patchLike = async () => {
     if (isLiked) {
@@ -57,7 +58,7 @@ const PostWidget = ({ post }) => {
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
-        friend={userId}
+        friend={friend}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}

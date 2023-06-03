@@ -83,6 +83,7 @@ const Login = ({ setPageType }) => {
     try {
       await signInAuthUserWithEmailAndPassword(values.email, values.password);
       onSubmitProps.resetForm();
+      navigate("/home");
     } catch (error) {
       console.log("user sign in failed", error);
     }

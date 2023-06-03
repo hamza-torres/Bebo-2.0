@@ -1,32 +1,34 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import Friend from "../../components/Friend";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { setFriends } from "../../state/states";
-import { setFriends } from "../../store/friends/friends.action";
+import { setFriends, setUsers } from "../../store/friends/friends.action";
 import WidgetWrapper from "../../components/WidgetWrapper";
+import { selectToken } from "../../store/user/user.selector";
+import { selectFriends } from "../../store/friends/friends.selector";
+import { getUserFriends, getUsers } from "../../utils/firebase";
 
-const FriendListWidget = ({ userId }) => {
+const FriendListWidget = ({ user, userlist = false }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
-  const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
-
-  const getFriends = async () => {
-    const response = await fetch(
-      `http://localhost:3001/users/${userId}/friends`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
-  };
+  const token = useSelector(selectToken);
+  const friends = useSelector(selectFriends);
+  const [list, setList] = useState([]);
 
   useEffect(() => {
-    getFriends();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!userlist) {
+      getUserFriends(user).then((friends) => {
+        dispatch(setFriends(friends));
+        setList(friends);
+      });
+      return;
+    }
+    getUsers().then((users) => {
+      dispatch(setUsers(users));
+      setList(users);
+    });
+  }, []);
 
   return (
     <WidgetWrapper>
@@ -36,16 +38,17 @@ const FriendListWidget = ({ userId }) => {
         fontWeight="500"
         sx={{ mb: "1.5rem" }}
       >
-        Friend List
+        {!userlist ? "Friend List" : "User List"}
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
-        {friends.map((friend) => (
+        {list.map((friend) => (
           <Friend
-            key={friend._id}
-            friendId={friend._id}
-            name={`${friend.firstName} ${friend.lastName}`}
-            subtitle={friend.occupation}
-            userPicturePath={friend.picturePath}
+            friend={{
+              userId: friend.uid,
+              name: `${friend.firstName} ${friend.lastName}`,
+              location: friend.location,
+              userPicturePath: friend.picture,
+            }}
           />
         ))}
       </Box>

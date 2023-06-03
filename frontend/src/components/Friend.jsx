@@ -2,9 +2,7 @@ import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  removeItemFromFriends,
-} from "../store/friends/friends.action";
+import { removeItemFromFriends } from "../store/friends/friends.action";
 import { selectFriends, selectUsers } from "../store/friends/friends.selector";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
@@ -12,57 +10,36 @@ import { selectCurrentUser, selectToken } from "../store/user/user.selector";
 import { useEffect, useState } from "react";
 import { getUsers } from "../utils/firebase";
 
-const Friend = ({ friendId }) => {
+const Friend = ({ friend }) => {
   const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector(selectToken);
   const friends = useSelector(selectFriends);
-  // const friend = users.find(user => user.uid === friendId)
-  // const [friend, setFriend] = useState(null);
-  const friend = useSelector(selectCurrentUser)
-  // const { uid, firstName, lastName, location, picture } = friend;
+  // const friend = useSelector(selectCurrentUser)
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  // useEffect(() => {
-  //   getUsers().then((users) => {
-  //     if (users) {
-  //       dispatch(setUsers(users));
-  //       setFriend(users.find((user) => user.uid === friendId));
-  //     }
-  //   });
-  //   // const getFriend = async () => {
-  //   // getUser(friendId).then((info) => {
-  //   //   if (info) {
-  //   //     setFriend(info);
-  //   //   }
-  //   //   console.log("info is: ", info);
-  //   // });
-  //   // };
-  //   // getFriend();
-  // }, []);
-
   useEffect(() => {
-		const loadAccounts = async () => {
-			const usr = await getUsers();
-			setUsers(usr);
-      const fr = usr.filter(obj => obj.uid === friendId);
-      console.log("This is the friend", fr)
+    const loadAccounts = async () => {
+      console.log("getting all the users");
+      const usr = await getUsers();
+      console.log("this is the user that have been retrieved", usr);
+      setUsers(usr);
+      // const fr = usr.filter(obj => obj.uid === friendId);
+      console.log("This is the friend uid", friend.userId);
+      const myObject = usr.find((obj) => obj.uid === friend.userId);
+      console.log("This is the friend", myObject);
       // setFriend(usr.find((user) => user.uid === friendId));
-			console.log('users stuff', usr);
-		};
-		loadAccounts();
-	}, []);
+      // console.log('users stuff', usr);
+    };
+    loadAccounts();
+  }, []);
 
-
-
-
-
-  const isFriend = friends.find((frnd) => frnd.uid === friend.uid);
+  const isFriend = friends.find((frnd) => frnd.uid === friend.userId);
 
   const patchFriend = async () => {
     if (isFriend) {
@@ -77,10 +54,10 @@ const Friend = ({ friendId }) => {
       {friend && (
         <FlexBetween>
           <FlexBetween gap="1rem">
-            <UserImage image={friend.picture} size="55px" />
+            <UserImage image={friend.userPicturePath} size="55px" />
             <Box
               onClick={() => {
-                navigate(`/profile/${friend.uid}`);
+                navigate(`/profile/${friend.userId}`);
                 navigate(0);
               }}
             >
@@ -95,7 +72,8 @@ const Friend = ({ friendId }) => {
                   },
                 }}
               >
-                {`${friend.firstName} ${friend.lastName}`}
+                {friend.name}
+                {/* {`${friend.firstName} ${friend.lastName}`} */}
               </Typography>
               <Typography color={medium} fontSize="0.75rem">
                 {friend.location}

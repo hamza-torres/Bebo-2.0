@@ -1,51 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { setPosts } from "../../state/states";
-import { setPosts } from "../../store/posts/posts.action";
 import { selectPosts } from "../../store/posts/posts.selector";
 import PostWidget from "./PostWidget";
-import { getAllPosts } from "../../utils/firebase";
+import { getAllPosts, getUserPosts } from "../../utils/firebase";
 
-const PostsWidget = ({ userId, isProfile = false }) => {
-  const dispatch = useDispatch();
-  const posts = useSelector(selectPosts);
+const PostsWidget = ({ user, isProfile = false }) => {
+  const [posts, setPosts] = useState([]);
+  const userPosts = useSelector(selectPosts);
 
-  const getPosts = async () => {
-    // const response = await fetch("http://localhost:3001/posts", {
-    //   method: "GET",
-    //   headers: { Authorization: `Bearer ${token}` },
-    // });
-    // const data = await response.json();
-    // dispatch(setPosts({ posts: data }));
-    getAllPosts().then((data) => {
-      dispatch(setPosts(data));
-    })
-
-
-  };
-
-  const getUserPosts = async () => {
-    // const response = await fetch(
-    //   `http://localhost:3001/posts/${userId}/posts`,
-    //   {
-    //     method: "GET",
-    //     headers: { Authorization: `Bearer ${token}` },
-    //   }
-    // );
-    // const data = await response.json();
-    // dispatch(setPosts({ posts: data }));
-
-    const data = await getUserPosts(userId);
-    dispatch(setPosts(data));
+  const retrievePosts = async () => {
+    if (isProfile) {
+      getUserPosts(user).then((data) => {
+        setPosts(data);
+      });
+    } else {
+      getAllPosts().then((data) => {
+        setPosts(data);
+      });
+    }
   };
 
   useEffect(() => {
-    if (isProfile) {
-      getUserPosts();
-    } else {
-      getPosts();
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    retrievePosts();
+  }, [userPosts]);
 
   return (
     <>
@@ -53,35 +30,6 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         <PostWidget key={post.postId} post={post} />
       ))}
     </>
-    // <>
-    //   {posts.map(
-    //     ({
-    //       _id,
-    //       userId,
-    //       firstName,
-    //       lastName,
-    //       description,
-    //       location,
-    //       picturePath,
-    //       userPicturePath,
-    //       likes,
-    //       comments,
-    //     }) => (
-    //       <PostWidget
-    //         key={_id}
-    //         postId={_id}
-    //         postUserId={userId}
-    //         name={`${firstName} ${lastName}`}
-    //         description={description}
-    //         location={location}
-    //         picturePath={picturePath}
-    //         userPicturePath={userPicturePath}
-    //         likes={likes}
-    //         comments={comments}
-    //       />
-    //     )
-    //   )}
-    // </>
   );
 };
 
