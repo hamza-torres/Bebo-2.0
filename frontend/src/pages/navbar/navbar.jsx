@@ -21,16 +21,23 @@ import {
   Menu,
   Close,
 } from "@mui/icons-material";
+// import HomeIcon from '@mui/icons-material/Home';
 import { useDispatch, useSelector } from "react-redux";
-import { setMode, seLogout } from "../../state/states";
+// import { setMode, seLogout } from "../../state/states";
+// import { setMode } from "../../store/mode/mode.action";
+import { setCurrentUser, setMode } from "../../store/user/user.action";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
+import { signOutUser } from "../../utils/firebase";
+import { setFriends } from "../../store/friends/friends.action";
+import { setPosts } from "../../store/posts/posts.action";
+import { selectCurrentUser } from "../../store/user/user.selector";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const user = useSelector(selectCurrentUser);
   const isNonMobile = useMediaQuery("(min-width: 1000px)");
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -38,10 +45,27 @@ const Navbar = () => {
   const background = theme.palette.background.default;
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
-  const firstName = 'John'
-  const lastName = 'Doe'
-  const fullName = `${firstName} ${lastName}`
-  // const fullName = `${user.firstName} ${user.lastName}`;
+  // const firstName = 'John'
+  // const lastName = 'Doe'
+  // const fullName = `${firstName} ${lastName}`
+  const fullName = `${user.firstName} ${user.lastName}`;
+
+  const logout = async () => {
+    await signOutUser();
+    dispatch(
+      setCurrentUser({
+        picture:
+          "https://is3-ssl.mzstatic.com/image/thumb/Podcasts115/v4/a0/49/14/a0491493-7b7a-e2e9-c4c0-154521cbdec8/mza_14223063978308988767.jpg/300x300bb-75.jpg",
+        firstName: "John",
+        lastName: "Doe",
+      })
+    );
+    dispatch(setMode("dark"));
+    dispatch(setFriends([]));
+    dispatch(setPosts([]));
+    navigate("/auth");
+  };
+
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
@@ -83,6 +107,7 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
+
           <Message sx={{ fontSize: "25px" }} />
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
@@ -107,14 +132,12 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
-              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+              <MenuItem onClick={logout}>Log Out</MenuItem>
             </Select>
           </FormControl>
         </FlexBetween>
       ) : (
-        <IconButton
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
+        <IconButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           <Menu />
         </IconButton>
       )}
@@ -131,9 +154,7 @@ const Navbar = () => {
         >
           {/* CLOSE ICON */}
           <Box display="flex" justifyContent="flex-end" p="1rem">
-            <IconButton
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
+            <IconButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               <Close />
             </IconButton>
           </Box>
@@ -180,9 +201,7 @@ const Navbar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>
-                  Log Out
-                </MenuItem>
+                <MenuItem onClick={logout}>Log Out</MenuItem>
               </Select>
             </FormControl>
           </FlexBetween>

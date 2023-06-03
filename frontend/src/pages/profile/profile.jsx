@@ -10,25 +10,22 @@ import MyPostWidget from "../widgets/MyPostWidget";
 import FriendListWidget from "../widgets/FriendListWidget";
 import AdvertWidget from "../widgets/AdvertWidget";
 import Friend from "../../components/Friend";
+import { selectToken } from "../../store/user/user.selector";
+import { getUser } from "../../utils/firebase";
+import UserFriendListWidget from "../widgets/UserFriendListWidget";
+import UserPostsWidget from "../widgets/UserPostsWidget";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const { userId } = useParams();
-  const token = useSelector((state) => state.token);
+  const token = useSelector(selectToken);
   const isNonMobile = useMediaQuery("(min-width:1000px)");
 
-  const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    setUser(data);
-  };
-
   useEffect(() => {
-    getUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    getUser(userId).then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   if (!user) return null;
 
@@ -45,15 +42,14 @@ const Profile = () => {
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
           <UserWidget userId={userId} picturePath={user.picturePath} />
           <Box m="2rem 0" />
-          <FriendListWidget userId={userId} />
+          {/* <FriendListWidget userId={user} /> */}
+          <UserFriendListWidget userId={userId} />
         </Box>
         <Box
-          flexBasis={isNonMobile ? "42%" : undefined}
-          mt={isNonMobile ? undefined : "2rem"}
+          flexBasis={isNonMobile ? "45%" : undefined}
+          mt={isNonMobile ? '-2rem' : "2rem"}
         >
-          <MyPostWidget picturePath={user.picturePath} />
-          <Box m="2rem 0" />
-          <PostsWidget userId={userId} isProfile />
+          {<UserPostsWidget user={user} /> || "No posts"}
         </Box>
       </Box>
     </Box>
