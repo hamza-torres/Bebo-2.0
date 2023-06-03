@@ -9,11 +9,9 @@ import { selectToken } from "../../store/user/user.selector";
 import { selectFriends } from "../../store/friends/friends.selector";
 import { getUserFriends, getUsers } from "../../utils/firebase";
 
-const FriendListWidget = ({ userId }) => {
+const UserFriendListWidget = ({ userId }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
-  const token = useSelector(selectToken);
-  const friends = useSelector(selectFriends);
   // const friends = useSelector(selectFriends);
   const [list, setList] = useState([]);
 
@@ -21,13 +19,12 @@ const FriendListWidget = ({ userId }) => {
     getUserFriends(userId).then((friends) => {
       if (friends) {
         const filteredFriends = friends.filter(
-          (friend) => friend.userId !== token.uid
+          (friend) => friend.userId !== userId
         );
         setList(filteredFriends);
-        dispatch(setFriends(filteredFriends));
       }
     });
-  }, [friends]);
+  }, []);
 
   return (
     <WidgetWrapper>
@@ -48,4 +45,4 @@ const FriendListWidget = ({ userId }) => {
   );
 };
 
-export default FriendListWidget;
+export default UserFriendListWidget;

@@ -12,6 +12,8 @@ import AdvertWidget from "../widgets/AdvertWidget";
 import Friend from "../../components/Friend";
 import { selectToken } from "../../store/user/user.selector";
 import { getUser } from "../../utils/firebase";
+import UserFriendListWidget from "../widgets/UserFriendListWidget";
+import UserPostsWidget from "../widgets/UserPostsWidget";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -40,15 +42,14 @@ const Profile = () => {
         <Box flexBasis={isNonMobile ? "26%" : undefined}>
           <UserWidget userId={userId} picturePath={user.picturePath} />
           <Box m="2rem 0" />
-          <FriendListWidget userId={user} />
+          {/* <FriendListWidget userId={user} /> */}
+          <UserFriendListWidget userId={userId} />
         </Box>
         <Box
           flexBasis={isNonMobile ? "45%" : undefined}
           mt={isNonMobile ? '-2rem' : "2rem"}
         >
-          {/* <MyPostWidget picturePath={user.picture} /> */}
-          {/* <Box m="2rem 0" /> */}
-          <PostsWidget user={user} isProfile />
+          {<UserPostsWidget user={user} /> || "No posts"}
         </Box>
       </Box>
     </Box>

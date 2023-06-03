@@ -207,10 +207,9 @@ export const setFireFriends = async (user, friends) => {
   }
 };
 
-export const getUserFriends = async (user) => {
-  const docRef = doc(db, "friends", user.uid);
+export const getUserFriends = async (userId) => {
+  const docRef = doc(db, "friends", userId);
   const docSnap = await getDoc(docRef);
-
   if (docSnap.exists()) {
     return docSnap.data().friends;
   } else {

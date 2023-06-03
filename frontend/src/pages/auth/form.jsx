@@ -77,13 +77,14 @@ export default Form;
 const Login = ({ setPageType }) => {
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width:1000px)");
+  const navigate = useNavigate();
 
   const login = async (values, onSubmitProps) => {
     console.log("logging in", values);
     try {
       await signInAuthUserWithEmailAndPassword(values.email, values.password);
       onSubmitProps.resetForm();
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.log("user sign in failed", error);
     }

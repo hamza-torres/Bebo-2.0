@@ -44,8 +44,6 @@ const PostWidget = ({ post }) => {
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
-  console.log('this is the uid being passed through the post', userId)
-
   const patchLike = async () => {
     if (isLiked) {
       await updatePostLikes(userId, postId, user.uid, "remove");

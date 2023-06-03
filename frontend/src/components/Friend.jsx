@@ -2,21 +2,23 @@ import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { removeItemFromFriends } from "../store/friends/friends.action";
+import {
+  addItemToFriends,
+  removeItemFromFriends,
+  setFriends,
+} from "../store/friends/friends.action";
 import { selectFriends, selectUsers } from "../store/friends/friends.selector";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { selectCurrentUser, selectToken } from "../store/user/user.selector";
 import { useEffect, useState } from "react";
-import { getUsers } from "../utils/firebase";
+import { getUserFriends, getUsers } from "../utils/firebase";
 
 const Friend = ({ friend }) => {
-  const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector(selectToken);
   const friends = useSelector(selectFriends);
-  // const friend = useSelector(selectCurrentUser)
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
@@ -24,29 +26,24 @@ const Friend = ({ friend }) => {
   const medium = palette.neutral.medium;
 
   useEffect(() => {
-    const loadAccounts = async () => {
-      console.log("getting all the users");
-      const usr = await getUsers();
-      console.log("this is the user that have been retrieved", usr);
-      setUsers(usr);
-      // const fr = usr.filter(obj => obj.uid === friendId);
-      console.log("This is the friend uid", friend.userId);
-      const myObject = usr.find((obj) => obj.uid === friend.userId);
-      console.log("This is the friend", myObject);
-      // setFriend(usr.find((user) => user.uid === friendId));
-      // console.log('users stuff', usr);
-    };
-    loadAccounts();
+    getUserFriends(token).then((friends) => {
+      if (friends) {
+        const filteredFriends = friends.filter(
+          (friend) => friend.userId !== token.uid
+        );
+        dispatch(setFriends(filteredFriends));
+      }
+    });
   }, []);
 
-  const isFriend = friends.find((frnd) => frnd.uid === friend.userId);
+  const isFriend = friends.find((frnd) => frnd.userId === friend.userId);
 
   const patchFriend = async () => {
     if (isFriend) {
       dispatch(removeItemFromFriends(friends, friend, token));
       return;
     }
-    dispatch(removeItemFromFriends(friends, friend, token));
+    dispatch(addItemToFriends(friends, friend, token));
   };
 
   return (
