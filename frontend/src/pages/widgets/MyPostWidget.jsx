@@ -77,6 +77,7 @@ const MyPostWidget = ({ picturePath }) => {
       picture: "",
       likes: [],
       comments: [],
+      tags: [],
       userPicturePath: user.picture,
     };
     if (isImage) {

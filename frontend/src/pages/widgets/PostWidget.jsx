@@ -19,7 +19,7 @@ import { selectToken } from "../../store/user/user.selector";
 import { getUserPosts, updatePostLikes } from "../../utils/firebase";
 
 const PostWidget = ({ post }) => {
-  const token = useSelector(selectToken);
+
   // const [friend, setFriend] = useState(null);
   const {
     postId,
@@ -36,7 +36,8 @@ const PostWidget = ({ post }) => {
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(selectToken);
-  const isLiked = Boolean(likes[token.uid]);
+  // const isLiked = likes.includes(user.uid);
+  const [isLiked, setIsliked] = useState(false);
   const likeCount = Object.keys(likes).length;
 
   const { palette } = useTheme();
@@ -49,11 +50,19 @@ const PostWidget = ({ post }) => {
     if (isLiked) {
       await updatePostLikes(userId, postId, user.uid, "remove");
       post.likes = post.likes.filter((like) => like !== user.uid);
+      setIsliked(false);
     } else {
       await updatePostLikes(userId, postId, user.uid, "add");
       post.likes.push(user.uid);
+      setIsliked(true);
     }
   };
+
+  useEffect(() => {
+    setIsliked(likes.includes(user.uid))
+  }, [])
+
+
 
   return (
     <WidgetWrapper m="2rem 0">

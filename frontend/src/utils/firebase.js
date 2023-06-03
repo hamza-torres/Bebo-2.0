@@ -235,8 +235,12 @@ export const updatePostLikes = async (postUserId, postId, userId, action) => {
 
       if (postIndex !== -1) {
         // Update the likes array based on the action
+        const likesArray = postsArray[postIndex].likes
         if (action === "add") {
-          postsArray[postIndex].likes.push(userId);
+          const isLikedByUser = likesArray.includes(userId);
+          if (!isLikedByUser) {
+            postsArray[postIndex].likes.push(userId);
+          }
         } else if (action === "remove") {
           const userIndex = postsArray[postIndex].likes.indexOf(userId);
           if (userIndex !== -1) {
