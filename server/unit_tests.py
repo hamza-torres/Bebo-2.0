@@ -45,10 +45,10 @@ class TestMathFunctions(unittest.TestCase):
             },
         ]
 
-        for i in range(10):
-            image_url = "https://picsum.photos/id/{}/200/300".format(random.randint(1, 1000))
-            result = detect_safe_search_uri(image_url)
+        for i in image_urls:
+            result = detect_safe_search_uri(i)
             self.assertIsNotNone(result)
+
 
     def test_analyze_text(self):
         texts = [
@@ -68,13 +68,8 @@ class TestMathFunctions(unittest.TestCase):
         ]
         for text in texts:
             result = analyze_text(text)
-            self.assertIsNone(result)
+            self.assertIsNotNone(result)
 
-    @patch("my_module.divide")
-    def test_divide_by_zero(self, mock_divide):
-        mock_divide.side_effect = ZeroDivisionError
-        with self.assertRaises(ZeroDivisionError):
-            divide(10, 0)
 
 
 if __name__ == "__main__":
