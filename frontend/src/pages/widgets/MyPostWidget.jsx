@@ -85,30 +85,30 @@ const MyPostWidget = ({ picturePath }) => {
   };
 
   const handlePost = async () => {
+    const data = {
+      postId: uuidv4(),
+      userId: token.uid || "",
+      name: `${user.firstName} ${user.lastName}`,
+      description: post || " ",
+      location: user.location || "",
+      picture: "",
+      likes: [],
+      comments: [],
+      tags: {
+        adult: "NONE",
+        medical: "NONE",
+        spoofed: "NONE",
+        violence: "NONE",
+        racy: "NONE",
+      },
+      userPicturePath: user.picture,
+    };
     const makePost = async () => {
       getUser(user.uid).then((info) => {
         if (info) {
           dispatch(setCurrentUser(info));
         }
       });
-      const data = {
-        postId: uuidv4(),
-        userId: token.uid || "",
-        name: `${user.firstName} ${user.lastName}`,
-        description: post || " ",
-        location: user.location || "",
-        picture: "",
-        likes: [],
-        comments: [],
-        tags: {
-          adult: "NONE",
-          medical: "NONE",
-          spoofed: "NONE",
-          violence: "NONE",
-          racy: "NONE",
-        },
-        userPicturePath: user.picture,
-      };
       if (isImage) {
         console.log("there is an image");
         const res = await uploadFile(token, image, "post");
@@ -117,9 +117,13 @@ const MyPostWidget = ({ picturePath }) => {
       }
       console.log(data);
       dispatch(addItemToPosts(token, posts, data));
+      getAllPosts().then((data) => {
+        setPosts(data);
+      });
     } 
     makePost().then(() => {
-      processPostImage(data.postId, data.userId); 
+      processPostImage(data.postId, data.userId);
+      
     });
     setIsImage(false);
     setImage(null);

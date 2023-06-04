@@ -37,7 +37,30 @@ def detect_safe_search_uri(uri):
                 response.error.message))
     return results
         
+def get_sentiment_interpretation(score, magnitude):
+    if score < -0.25:
+        sentiment = "Negative"
+    elif score > 0.25:
+        sentiment = "Positive"
+    else:
+        sentiment = "Neutral"
 
+    if magnitude < 0.5:
+        sentiment += " (Weak)"
+    elif magnitude > 0.75:
+        sentiment += " (Strong)"
+
+    return sentiment
+    # if score >= 0.5:
+    #     return 'Very Positive'
+    # elif score >= 0.3:
+    #     return 'Positive'
+    # elif score >= 0:
+    #     return 'Neutral'
+    # elif score > -0.3:
+    #     return 'Negative'
+    # else:
+    #     return 'Very Negative'
 
 def analyze_text(text):
     # Imports the Google Cloud client library
@@ -54,8 +77,19 @@ def analyze_text(text):
     sentiment = client.analyze_sentiment(
         request={"document": document}
     ).document_sentiment
-    print(f"Text: {text}")
-    print(f"Sentiment: {sentiment.score}, {sentiment.magnitude}")
+    # print(f"Text: {text}")
+    # print(f"Sentiment: {sentiment.score}, {sentiment.magnitude}")
+    result = {
+        'result': {
+            'score': sentiment.score,
+            'magnitude': sentiment.magnitude
+        },
+        'interpretation': get_sentiment_interpretation(sentiment.score, sentiment.magnitude)
+    }
+    print(result)
+    return result
+
+
 
 
 
