@@ -1,7 +1,8 @@
+from google.cloud import vision, language_v1
+    
 def detect_safe_search_uri(uri):
     """Detects unsafe features in the file located in Google Cloud Storage or
     on the Web."""
-    from google.cloud import vision
     client = vision.ImageAnnotatorClient()
     image = vision.Image()
     image.source.image_uri = uri
@@ -38,8 +39,31 @@ def detect_safe_search_uri(uri):
         
 
 
+def analyze_text(text):
+    # Imports the Google Cloud client library
+    from google.cloud import language_v1
+
+    # Instantiates a client
+    client = language_v1.LanguageServiceClient()
+
+    document = language_v1.types.Document(
+        content=text, type_=language_v1.types.Document.Type.PLAIN_TEXT
+    )
+
+    # Detects the sentiment of the text
+    sentiment = client.analyze_sentiment(
+        request={"document": document}
+    ).document_sentiment
+    print(f"Text: {text}")
+    print(f"Sentiment: {sentiment.score}, {sentiment.magnitude}")
+
+
+
 if __name__ == '__main__':
     # Code to be executed when the file is run directly
-    uri = "https://www.asisonline.org/globalassets/security-management/today-in-security/2022/0922-tis-mexico-atrocities.jpg"
-    detect_safe_search_uri(uri)    
+    # uri = "https://www.asisonline.org/globalassets/security-management/today-in-security/2022/0922-tis-mexico-atrocities.jpg"
+    # detect_safe_search_uri(uri)
+    text = "I am so happy and joyful today"    
+    analyze_text(text)
+    
     pass

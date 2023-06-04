@@ -81,6 +81,10 @@ def process_all_posts():
 
 
 
+from google.cloud import language_v1
+
+
+
 
 
 
@@ -95,7 +99,10 @@ def process_all_posts():
         
 if __name__ == '__main__':
     # Code to be executed when the file is run directly
-    postId = "8f1c8e80-0507-465a-8c55-b1165ba2fed2"
-    userId = "lIOkzPJBK1TpQAuXYETh2IPp1ec2"
-    process_post_image(postId, userId)   
+    # postId = "8f1c8e80-0507-465a-8c55-b1165ba2fed2"
+    # userId = "lIOkzPJBK1TpQAuXYETh2IPp1ec2"
+    # process_post_image(postId, userId)   
+    
+    text = "I love using the Google Cloud NLP API!"
+    analyze_text(text)
     pass
