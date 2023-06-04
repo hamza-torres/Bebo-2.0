@@ -9,7 +9,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from moderation.explicit import detect_safe_search_uri 
+from moderation.explicit import detect_safe_search_uri, analyze_text
 
 
 # Use a service account.
@@ -81,7 +81,29 @@ def process_all_posts():
 
 
 
-from google.cloud import language_v1
+def update_post_sentiment():
+    # Retrieve all documents from the "posts" collection
+    posts_collection = db.collection('posts').get()
+
+    for post_doc in posts_collection:
+        user_id = post_doc.id
+        posts_array = post_doc.get('posts')
+
+        for post in posts_array:
+            post_id = post['postId']
+            description = post['description']
+
+            # Analyze the description using the analyze_text function
+            sentiment_result = analyze_text(description)
+
+            # Update the post object with the sentiment result
+            post['sentiment'] = sentiment_result
+
+        # Update the Firestore document with the modified posts array
+        post_ref = db.collection('posts').document(user_id)
+        post_ref.update({'posts': posts_array})
+
+    print('Sentiment analysis and update completed successfully.')
 
 
 
@@ -102,7 +124,8 @@ if __name__ == '__main__':
     # postId = "8f1c8e80-0507-465a-8c55-b1165ba2fed2"
     # userId = "lIOkzPJBK1TpQAuXYETh2IPp1ec2"
     # process_post_image(postId, userId)   
-    
-    text = "I love using the Google Cloud NLP API!"
-    analyze_text(text)
+    update_post_sentiment()
+
+    # text = "I love using the Google Cloud NLP API!"
+    # analyze_text(text)
     pass
