@@ -24,5 +24,5 @@ The social media platform includes the following components:
 
 
 ## Technologies Used
-- Backend: Flask, Firebase
+- Backend: Flask, Firebase, Google Cloud Platform
 - Frontend: React 
